@@ -35,6 +35,12 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
+        write:
+          replicas: 0
   syncPolicy:
     automated:
       prune: true
