@@ -43,10 +43,37 @@ spec:
                 label: grafana_dashboard
                 searchNamespace: monitoring
         prometheus:
+          enabled: true
+          service:
+            type: ClusterIP
           prometheusSpec:
-            podMonitorSelectorNilUsesHelmValues: false
+            replicas: 1
+            retention: 12h
+            retentionSize: 3GB
+            walCompression: true
             serviceMonitorSelectorNilUsesHelmValues: false
-            ruleSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            resources:
+              requests:
+                cpu: 200m
+                memory: 600Mi
+              limits:
+                memory: 1200Mi
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: local-path
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 5Gi
+        alertmanager:
+          enabled: false
+        kubeStateMetrics:
+          enabled: true      # set to false if you want even leaner
+#        nodeExporter:
+#          enabled: false     # disable if you don’t need node metrics
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
