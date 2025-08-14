@@ -14,7 +14,9 @@ spec:
     targetRevision: 6.6.4
     helm:
       values: |
+        deploymentMode: SingleBinary
         loki:
+          useTestSchema: true
           auth_enabled: false
           commonConfig:
             replication_factor: 1
@@ -35,6 +37,8 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
+        gateway:
+          enabled: false
         backend:
           replicas: 0
         read:
