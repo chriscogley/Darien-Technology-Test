@@ -17,6 +17,7 @@ spec:
         deploymentMode: SingleBinary
         loki:
           auth_enabled: false
+          useTestSchema: true
           server:
             http_listen_port: 3100
           commonConfig:
