@@ -8,9 +8,19 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:chriscogley/Darien-Technology-Test.git
-    targetRevision: main
-    path: charts/ollama
+    repoURL: https://helm.otwld.com/
+    chart: ollama
+    targetRevision: 1.26.0
+    helm:
+      values: |
+        replicaCount: 2
+        ollama:
+          models:
+            pull:
+              - "llama3:8b"
+        persistentVolume:
+          enabled: true
+          size: 30Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: ai
@@ -18,3 +28,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

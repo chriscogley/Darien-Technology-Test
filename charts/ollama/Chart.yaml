@@ -1,6 +1,0 @@
-apiVersion: v2
-name: ollama
-description: Ollama server Deployment (2 replicas) + PVC for model cache
-type: application
-version: 0.1.0
-appVersion: "latest"
