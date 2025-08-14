@@ -60,7 +60,7 @@ spec:
         alertmanager:
           enabled: false
         kubeStateMetrics:
-          enabled: true      # set to false if you want even leaner
+          enabled: true
         nodeExporter:
           enabled: false
         prometheusOperator:
@@ -89,8 +89,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
-      syncOptions:
-        - CreateNamespace=true
-        - ServerSideApply=true
-        - SkipDryRunOnMissingResource=true
-        - Replace=true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
+      - Replace=true
