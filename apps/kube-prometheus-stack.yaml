@@ -47,22 +47,28 @@ spec:
           enabled: true
           prometheusSpec:
             replicas: 1
-            retention: 12h
-            retentionSize: 3GB
+            retention: 6h
             walCompression: true
             resources:
               requests:
-                cpu: 200m
-                memory: 600Mi
+                cpu: 100m
+                memory: 350Mi
               limits:
-                memory: 1200Mi
+                memory: 700Mi
+            storageSpec: {}
+            enableAdminAPI: false
         alertmanager:
           enabled: false
         kubeStateMetrics:
           enabled: true      # set to false if you want even leaner
-#        nodeExporter:
-#          enabled: false
-
+        nodeExporter:
+          enabled: false
+        prometheusOperator:
+          enabled: true
+          admissionWebhooks:
+            enabled: false
+            patch:
+              enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
