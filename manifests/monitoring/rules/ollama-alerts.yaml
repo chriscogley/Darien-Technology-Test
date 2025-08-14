@@ -9,34 +9,62 @@ spec:
   groups:
     - name: ollama.rules
       rules:
-        # Caso 1: Hay límite de memoria definido en el/los contenedor(es)
-        - alert: OllamaHighMemoryUsage
+        # --- Per-pod con LIMITS ---
+        - alert: OllamaHighMemoryUsagePod
           expr: |
-            (
-              sum by (pod) (container_memory_working_set_bytes{namespace="ai", pod=~"ollama.*", container!="POD"})
-              /
-              sum by (pod) (kube_pod_container_resource_limits{namespace="ai", resource="memory", pod=~"ollama.*"})
-            ) > 0.80
+            100 *
+            sum by (pod) (container_memory_working_set_bytes{namespace="ai",pod=~"ollama.*",container!="" ,container!="POD"})
+            /
+            sum by (pod) (kube_pod_container_resource_limits{namespace="ai",resource="memory",pod=~"ollama.*"})
+            > 80
           for: 5m
           labels:
             severity: warning
-            team: platform
           annotations:
-            summary: "Ollama RAM > 80% del límite ({{ $labels.pod }})"
-            description: "Uso de memoria sobrepasa el 80% del límite por 5m."
+            summary: "Ollama RAM alta ({{ $labels.pod }})"
+            description: "Uso de memoria >80% del límite por 5m."
 
-        # Caso 2: Sin límite (usa requests como referencia)
-        - alert: OllamaHighMemoryUsageNoLimit
+        # --- Per-pod SIN limits: usa requests como baseline ---
+        - alert: OllamaHighMemoryUsagePodNoLimit
           expr: |
-            (
-              sum by (pod) (container_memory_working_set_bytes{namespace="ai", pod=~"ollama.*", container!="POD"})
-              /
-              sum by (pod) (kube_pod_container_resource_requests{namespace="ai", resource="memory", pod=~"ollama.*"})
-            ) > 0.80
+            100 *
+            sum by (pod) (container_memory_working_set_bytes{namespace="ai",pod=~"ollama.*",container!="" ,container!="POD"})
+            /
+            sum by (pod) (kube_pod_container_resource_requests{namespace="ai",resource="memory",pod=~"ollama.*"})
+            > 80
           for: 5m
           labels:
             severity: warning
-            team: platform
           annotations:
-            summary: "Ollama RAM > 80% de la request ({{ $labels.pod }})"
-            description: "No hay límite de memoria; se usa la request como baseline."
+            summary: "Ollama RAM alta sin límite ({{ $labels.pod }})"
+            description: "Sin límite de memoria; comparado contra requests >80% por 5m."
+
+        # --- Agregado (general para todos) con LIMITS ---
+        - alert: OllamaHighMemoryUsageTotal
+          expr: |
+            100 *
+            sum(container_memory_working_set_bytes{namespace="ai",pod=~"ollama.*",container!="" ,container!="POD"})
+            /
+            sum(kube_pod_container_resource_limits{namespace="ai",resource="memory",pod=~"ollama.*"})
+            > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ollama RAM total >80%"
+            description: "Suma de memoria (todos los pods Ollama) supera 80% del límite por 5m."
+
+        # --- Agregado SIN limits: usa requests ---
+        - alert: OllamaHighMemoryUsageTotalNoLimit
+          expr: |
+            100 *
+            sum(container_memory_working_set_bytes{namespace="ai",pod=~"ollama.*",container!="" ,container!="POD"})
+            /
+            sum(kube_pod_container_resource_requests{namespace="ai",resource="memory",pod=~"ollama.*"})
+            > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ollama RAM total >80% (sin límites)"
+            description: "No hay límites; se usa la suma de requests como baseline por 5m."
