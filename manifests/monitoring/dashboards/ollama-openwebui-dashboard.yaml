@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-ollama-openwebui
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  ollama-openwebui.json: |
+    {
+      "title": "OpenWebUI + Ollama Overview",
+      "schemaVersion": 38,
+      "version": 1,
+      "time": { "from": "now-6h", "to": "now" },
+      "timezone": "",
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(kube_pod_info, namespace)",
+            "current": { "text": "ai", "value": "ai", "selected": true },
+            "refresh": 2,
+            "includeAll": false
+          },
+          {
+            "name": "ollama_pod",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(kube_pod_info{namespace=\"$namespace\",pod=~\"ollama.*\"}, pod)",
+            "current": { "text": "ollama.*", "value": "ollama.*" },
+            "regex": "",
+            "refresh": 2,
+            "includeAll": true,
+            "multi": true
+          },
+          {
+            "name": "service_name",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(http_server_duration_bucket{job=\"otel-collector\"}, service_name)",
+            "current": { "text": "open-webui", "value": "open-webui" },
+            "includeAll": true,
+            "refresh": 2
+          },
+          {
+            "name": "http_route",
+            "type": "query",
+            "datasource": "Prometheus",
+            "query": "label_values(http_server_duration_bucket{job=\"otel-collector\"}, http_route)",
+            "current": { "text": "/api/generate", "value": "/api/generate" },
+            "includeAll": true,
+            "refresh": 2
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "CPU Ollama (cores)",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+          "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"$namespace\",pod=~\"$ollama_pod\",container!=\"POD\"}[5m]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Memoria Ollama (Working Set)",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"$namespace\",pod=~\"$ollama_pod\",container!=\"POD\"})",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Memoria Ollama (% del límite)",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+          "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "expr": "100 * sum by (pod) (container_memory_working_set_bytes{namespace=\"$namespace\",pod=~\"$ollama_pod\",container!=\"POD\"}) / sum by (pod) (kube_pod_container_resource_limits{namespace=\"$namespace\",resource=\"memory\",pod=~\"$ollama_pod\"})",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Latencia de inferencia (p95, OpenWebUI)",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "options": { "legend": { "displayMode": "hidden" } },
+          "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{job=\"otel-collector\",service_name=~\"$service_name\",http_route=~\"$http_route\"}[5m])))",
+              "legendFormat": "p95",
+              "refId": "A"
+            }
+          ]
+        }
+      ],
+      "annotations": { "list": [] }
+    }

@@ -42,7 +42,7 @@ spec:
               dashboards:
                 enabled: true
                 label: grafana_dashboard
-                searchNamespace: monitoring
+                searchNamespace: ALL
         prometheus:
           enabled: true
           service:

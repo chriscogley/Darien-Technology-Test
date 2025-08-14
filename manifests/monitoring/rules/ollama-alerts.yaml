@@ -1,0 +1,42 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ollama-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: ollama.rules
+      rules:
+        # Caso 1: Hay límite de memoria definido en el/los contenedor(es)
+        - alert: OllamaHighMemoryUsage
+          expr: |
+            (
+              sum by (pod) (container_memory_working_set_bytes{namespace="ai", pod=~"ollama.*", container!="POD"})
+              /
+              sum by (pod) (kube_pod_container_resource_limits{namespace="ai", resource="memory", pod=~"ollama.*"})
+            ) > 0.80
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Ollama RAM > 80% del límite ({{ $labels.pod }})"
+            description: "Uso de memoria sobrepasa el 80% del límite por 5m."
+
+        # Caso 2: Sin límite (usa requests como referencia)
+        - alert: OllamaHighMemoryUsageNoLimit
+          expr: |
+            (
+              sum by (pod) (container_memory_working_set_bytes{namespace="ai", pod=~"ollama.*", container!="POD"})
+              /
+              sum by (pod) (kube_pod_container_resource_requests{namespace="ai", resource="memory", pod=~"ollama.*"})
+            ) > 0.80
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Ollama RAM > 80% de la request ({{ $labels.pod }})"
+            description: "No hay límite de memoria; se usa la request como baseline."
