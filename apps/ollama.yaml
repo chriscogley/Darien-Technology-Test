@@ -12,12 +12,19 @@ spec:
     chart: ollama
     targetRevision: 1.26.0
     helm:
-      values: |
+      values: |       
         replicaCount: 2
         ollama:
           models:
+            create:
+              - name: llama3-8b-q3-ctx2k
+                template: |
+                  FROM llama3:8b-instruct-q3_K_M
+                  PARAMETER num_ctx 2048
+            run:
+              - llama3-8b-q3-ctx2k
             pull:
-              - "llama3:8b"
+              - llama3:8b-instruct-q3_K_M
         persistentVolume:
           enabled: true
           size: 30Gi
