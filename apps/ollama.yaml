@@ -17,13 +17,7 @@ spec:
         ollama:
           models:
             pull:
-              - llama3:8b-instruct-q2_K
-            create:
-              - name: llama3-8b-q2-ctx512
-                template: |
-                  FROM llama3:8b-instruct-q2_K
-                  PARAMETER num_ctx 512
-                  PARAMETER num_batch 2
+              - llama3.2:1b
             run: []
         extraEnv:
           - name: OLLAMA_KEEP_ALIVE
