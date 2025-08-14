@@ -65,6 +65,19 @@ spec:
           enabled: false
         prometheusOperator:
           enabled: true
+          logLevel: debug
+          rbac:
+            create: true
+          namespaces:
+            releaseNamespace: true
+            additional: []
+            prometheus:
+              - monitoring
+            alertmanager:
+              - monitoring
+            kubeStateMetrics:
+              - monitoring
+            thanosRuler: []
           admissionWebhooks:
             enabled: false
             patch:
