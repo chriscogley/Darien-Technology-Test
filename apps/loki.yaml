@@ -16,35 +16,60 @@ spec:
       values: |
         deploymentMode: SingleBinary
         loki:
-          useTestSchema: true
           auth_enabled: false
+          server:
+            http_listen_port: 3100
           commonConfig:
             replication_factor: 1
           storage:
             type: filesystem
+            filesystem:
+              chunks_directory: /var/loki/chunks
+              rules_directory: /var/loki/rules
           rulerConfig:
             storage:
               type: local
-          server:
-            http_listen_port: 3100
+              local:
+                directory: /var/loki/rules
         singleBinary:
           replicas: 1
+          securityContext:
+            readOnlyRootFilesystem: false
           persistence:
             enabled: false
+          extraVolumes:
+            - name: loki-data
+              emptyDir: {}
+          extraVolumeMounts:
+            - name: loki-data
+              mountPath: /var/loki
           resources:
             requests:
               cpu: 50m
               memory: 128Mi
             limits:
               memory: 256Mi
-        gateway:
-          enabled: false
         backend:
           replicas: 0
         read:
           replicas: 0
         write:
           replicas: 0
+        chunksCache:
+          enabled: false
+        resultsCache:
+          enabled: false
+        memcached:
+          enabled: false
+        memcachedExporter:
+          enabled: false
+        gateway:
+          enabled: false
+        monitoring:
+          selfMonitoring:
+            enabled: false
+        test:
+          enabled: false
   syncPolicy:
     automated:
       prune: true
