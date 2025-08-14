@@ -22,6 +22,11 @@ spec:
           ENABLE_SIGNUP: "True"
           ENABLE_LOGIN_FORM: "True"
           ENV: prod
+          ENABLE_OTEL: "true"
+          ENABLE_OTEL_METRICS: "true"
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.monitoring.svc:4317"
+          OTEL_EXPORTER_OTLP_INSECURE: "true"
+          OTEL_SERVICE_NAME: "open-webui"
   destination:
     server: https://kubernetes.default.svc
     namespace: ai

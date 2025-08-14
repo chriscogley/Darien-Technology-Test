@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promtail
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: promtail
+    targetRevision: 6.16.6
+    helm:
+      values: |
+        config:
+          clients:
+            - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+          snippets:
+            pipelineStages:
+              - cri: {}            # parsea timestamps CRI
+            extraScrapeConfigs: |
+              - job_name: kubernetes-pods-ai
+                kubernetes_sd_configs:
+                  - role: pod
+                relabel_configs:
+                  - action: keep
+                    source_labels: [__meta_kubernetes_namespace]
+                    regex: ai
+                  - action: replace
+                    source_labels: [__meta_kubernetes_pod_name]
+                    target_label: pod
+                  - action: replace
+                    source_labels: [__meta_kubernetes_pod_container_name]
+                    target_label: container
+                  - action: replace
+                    source_labels: [__meta_kubernetes_namespace]
+                    target_label: namespace
+                  - action: replace
+                    replacement: "$1"
+                    separator: /
+                    source_labels: [namespace, pod, container]
+                    target_label: job
+              - job_name: kubernetes-pods-monitoring
+                kubernetes_sd_configs:
+                  - role: pod
+                relabel_configs:
+                  - action: keep
+                    source_labels: [__meta_kubernetes_namespace]
+                    regex: monitoring
+                  - action: replace
+                    source_labels: [__meta_kubernetes_pod_name]
+                    target_label: pod
+                  - action: replace
+                    source_labels: [__meta_kubernetes_pod_container_name]
+                    target_label: container
+                  - action: replace
+                    source_labels: [__meta_kubernetes_namespace]
+                    target_label: namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Replace=true
