@@ -20,15 +20,23 @@ spec:
           command: ["sh","-lc"]
           args:
             - |
-              set -e
-              echo "Waiting for Ollama API at $OLLAMA ..."
-              for i in $(seq 1 60); do
+              set -euo pipefail
+              echo "Waiting for $OLLAMA ..."
+              for i in $(seq 1 180); do    # wait up to 15 min
                 code=$(curl -s -o /dev/null -w "%{http_code}" "$OLLAMA/api/tags" || true)
                 [ "$code" = "200" ] && break
-                echo "  not ready yet ($i/60)"; sleep 5
+                echo "  not ready ($i/180): code=$code"; sleep 5
               done
+              [ "$code" = "200" ] || { echo "Ollama never became ready"; exit 1; }
+
               echo "Pulling $MODEL ..."
-              curl -s -X POST "$OLLAMA/api/pull" \
-                -H 'Content-Type: application/json' \
-                -d "{\"name\":\"$MODEL\"}" | sed -u 's/^/  /'
+              # -f causes non-2xx to fail; --retry handles transient errors
+              curl -fsS --retry 5 --retry-delay 3 -X POST "$OLLAMA/api/pull" \
+                   -H 'Content-Type: application/json' \
+                   -d "{\"name\":\"$MODEL\"}" | sed -u 's/^/  /'
+
+              # verify it exists
+              curl -fsS "$OLLAMA/api/tags" | grep -q "\"name\":\"$MODEL\"" \
+                || { echo "Model $MODEL not found after pull"; exit 1; }
+
               echo "Done."
