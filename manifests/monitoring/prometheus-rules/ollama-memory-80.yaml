@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ollama-memory-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: ollama.rules
+      rules:
+        - alert: OllamaHighMemoryUsage
+          expr: |
+            sum by (pod) (
+              container_memory_working_set_bytes{namespace="ai", pod=~"ollama.*", container!="POD", container!=""}
+            )
+            /
+            sum by (pod) (
+              kube_pod_container_resource_limits{namespace="ai", resource="memory", pod=~"ollama.*"}
+            )
+            > 0.8
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Ollama pod using > 80% of its memory limit"
+            description: "Pod {{ $labels.pod }} memory usage > 80% for 5 minutes."

@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openwebui
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:chriscogley/Darien-Technology-Test.git
+    targetRevision: main
+    path: charts/openwebui
+    helm:
+      values: |
+        ingress:
+          host: devops-cc.darienc.com
+        env:
+          WEBUI_URL: https://devops-cc.darienc.com
+          DEFAULT_USER_ROLE: admin
+          OLLAMA_BASE_URL: http://ollama.ai.svc.cluster.local:11434
+          ENABLE_SIGNUP: "True"
+          ENABLE_LOGIN_FORM: "True"
+          ENV: prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

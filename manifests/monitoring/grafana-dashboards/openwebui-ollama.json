@@ -1,0 +1,38 @@
+{
+  "title": "OpenWebUI + Ollama Overview",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Ollama Pod Memory (bytes)",
+      "targets": [
+        {
+          "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"ai\", pod=~\"ollama.*\", container!=\"POD\", container!=\"\"})"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "Ollama Pod CPU (cores)",
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"ai\", pod=~\"ollama.*\", container!=\"POD\", container!=\"\"}[5m]))"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "graph",
+      "title": "Ollama API probe duration (s)",
+      "targets": [
+        {
+          "expr": "probe_duration_seconds{job=\"blackbox-exporter\", instance=\"http://ollama.ai.svc.cluster.local:11434/api/tags\"}"
+        }
+      ],
+      "id": 3
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}

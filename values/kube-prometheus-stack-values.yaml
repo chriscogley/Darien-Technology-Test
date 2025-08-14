@@ -1,0 +1,12 @@
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-http01"
+    hosts:
+      - devops-monitor-cc.darienc.com
+    tls:
+      - hosts:
+          - devops-monitor-cc.darienc.com
+        secretName: grafana-tls

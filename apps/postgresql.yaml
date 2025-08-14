@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 15.5.11
+    chart: postgresql
+    helm:
+      values: |
+        global:
+          storageClass: "local-path"
+        primary:
+          persistence:
+            size: 5Gi
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          service:
+            ports:
+              postgresql: 5432
+        auth:
+          username: "openwebui"
+          database: "openwebui"
+          existingSecret: "pg-auth"
+          secretKeys:
+            userPasswordKey: "password"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

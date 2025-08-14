@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ollama-prepull-llama3-8b
+  namespace: ai
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: pull
+          image: curlimages/curl:8.8.0
+          env:
+            - name: OLLAMA
+              value: http://ollama.ai.svc.cluster.local:11434
+            - name: MODEL
+              value: llama3:8b
+          command: ["sh","-lc"]
+          args:
+            - |
+              set -e
+              echo "Waiting for Ollama API at $OLLAMA ..."
+              for i in $(seq 1 60); do
+                code=$(curl -s -o /dev/null -w "%{http_code}" "$OLLAMA/api/tags" || true)
+                [ "$code" = "200" ] && break
+                echo "  not ready yet ($i/60)"; sleep 5
+              done
+              echo "Pulling $MODEL ..."
+              curl -s -X POST "$OLLAMA/api/pull" \
+                -H 'Content-Type: application/json' \
+                -d "{\"name\":\"$MODEL\"}" | sed -u 's/^/  /'
+              echo "Done."

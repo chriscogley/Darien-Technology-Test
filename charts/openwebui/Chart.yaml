@@ -1,0 +1,6 @@
+apiVersion: v2
+name: openwebui
+description: OpenWebUI connected to Ollama + Postgres with Ingress + TLS
+type: application
+version: 0.2.0
+appVersion: "latest"

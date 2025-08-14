@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 66.2.2
+    chart: kube-prometheus-stack
+    helm:
+      values: |
+        grafana:
+          grafana.ini:
+            server:
+              root_url: https://devops-monitor-cc.darienc.com
+            auth:
+              disable_login_form: true
+              disable_signout_menu: true
+            auth.anonymous:
+              enabled: true
+              org_name: Main Org.
+              org_role: Viewer
+            users:
+              allow_sign_up: false
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: "letsencrypt-http01"
+            hosts:
+              - devops-monitor-cc.darienc.com
+            tls:
+              - hosts:
+                  - devops-monitor-cc.darienc.com
+                secretName: grafana-tls
+            sidecar:
+              dashboards:
+                enabled: true
+                label: grafana_dashboard
+                searchNamespace: monitoring
+        prometheus:
+          prometheusSpec:
+            podMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - SkipDryRunOnMissingResource=true
+        - ServerSideApply=true

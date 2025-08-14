@@ -1,0 +1,41 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/open-webui/open-webui
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+  limits:
+    cpu: "1"
+    memory: "1.5Gi"
+
+ingress:
+  enabled: true
+  className: traefik
+  host: devops-cc.darienc.com
+  tls:
+    enabled: true
+    secretName: openwebui-tls
+
+env:
+  WEBUI_URL: https://devops-cc.darienc.com
+  DEFAULT_USER_ROLE: admin
+  OLLAMA_BASE_URL: http://ollama.ai.svc.cluster.local:11434
+  ENABLE_SIGNUP: "True"
+  ENABLE_LOGIN_FORM: "True"
+  ENV: prod
+
+secretEnvFrom:
+  - name: openwebui-db
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
