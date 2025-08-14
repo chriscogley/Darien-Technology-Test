@@ -51,7 +51,6 @@ spec:
             replicas: 1
             retention: 6h
             walCompression: true
-            storageSpec: {}
             resources:
               requests:
                 cpu: 100m
