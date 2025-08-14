@@ -72,7 +72,7 @@ spec:
         kubeStateMetrics:
           enabled: true      # set to false if you want even leaner
 #        nodeExporter:
-#          enabled: false     # disable if you don’t need node metrics
+#          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
@@ -83,5 +83,6 @@ spec:
       selfHeal: true
       syncOptions:
         - CreateNamespace=true
-        - SkipDryRunOnMissingResource=true
         - ServerSideApply=true
+        - SkipDryRunOnMissingResource=true
+        - Replace=true
