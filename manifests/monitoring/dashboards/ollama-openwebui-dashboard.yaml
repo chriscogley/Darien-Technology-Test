@@ -71,7 +71,7 @@ data:
           "targets": [
             {
               "datasource": "Prometheus",
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_duration_bucket{job=\"otel-collector\",service_name=\"open-webui\"}[5m])))",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(traces_spanmetrics_latency_bucket{service_name=~\"open.?webui\"}[5m])))",
               "legendFormat": "p95"
             }
           ]
@@ -85,7 +85,7 @@ data:
           "targets": [
             {
               "datasource": "Prometheus",
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(duration_milliseconds_bucket{service_name=\"open-webui\",span_kind=\"CLIENT\",peer_service=\"ollama\"}[5m])))",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(traces_spanmetrics_latency_bucket{service_name=~\"open.?webui\", span_kind=~\"CLIENT|SPAN_KIND_CLIENT\"}[5m])))",
               "legendFormat": "p95 (client→ollama)"
             }
           ]
