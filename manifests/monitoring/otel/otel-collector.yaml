@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
         - name: otelcol
-          image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector:0.111.0
+          image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.111.0
           args: ["--config=/config/config.yaml"]
           ports:
             - name: otlp-grpc
@@ -88,6 +88,12 @@ spec:
     - name: metrics
       port: 8889
       targetPort: 8889
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
