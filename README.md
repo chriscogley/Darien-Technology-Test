@@ -95,7 +95,7 @@ Punto principal que usa ArgoCD para desplegar todas las apps. Se corre una vez y
 
 ### Folder charts
 
-Chart Helm para instalar OpenWebUI.
+Chart Helm para instalar OpenWebUI. Usada una local para integrar secretos y envs para concetar al stack de observabilidad.
 
 ### Folder manifests
 
@@ -115,6 +115,10 @@ Script usado para encriptar (usando kubeseal) los secretos y ponerlos en manifes
 2. ArgoCD detecta cambios en el respositorio.
 3. ArgoCD automaticamente aplica los cambios en el cluster.
 4. ArgoCD monitorea la salud de la aplicacion y el status de la sincronizacion.
+
+## Recursos creados:
+
+![getall-n-ai.png](images/getall-n-ai.png)
 
 
 ## README explicativo (en el repositorio) sobre las decisiones tomadas y que evidencien las configuraciones.
