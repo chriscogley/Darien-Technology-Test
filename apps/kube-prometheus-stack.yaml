@@ -65,7 +65,7 @@ spec:
               limits:
                 memory: 700Mi
         alertmanager:
-          enabled: false
+          enabled: true
         kubeStateMetrics:
           enabled: true
         nodeExporter:
