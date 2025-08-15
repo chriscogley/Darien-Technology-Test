@@ -17,7 +17,6 @@ spec:
           host: devops-cc.darienc.com
         env:
           WEBUI_URL: https://devops-cc.darienc.com
-          WEBUI_AUTH: "username"
           DEFAULT_USER_ROLE: admin
           OLLAMA_BASE_URL: http://ollama.ai.svc.cluster.local:11434
           ENABLE_SIGNUP: "True"
