@@ -118,8 +118,17 @@ Script usado para encriptar (usando kubeseal) los secretos y ponerlos en manifes
 
 ## Recursos creados:
 
-![getall-n-ai.png](images/getall-n-ai.png)
+### Namespace AI 
 
+Donde esta OpenWebUI, Ollama y Postgresql
+
+![getall-n-ai2.png](images/getall-n-ai2.png)
+
+### Namespace Monitoring
+
+Donde esta el stack de observabilidad Grafana, Prometheus, AlertManager, Loki.
+
+![getall-n-monitoring.png](images/getall-n-monitoring.png)
 
 ## README explicativo (en el repositorio) sobre las decisiones tomadas y que evidencien las configuraciones.
 
