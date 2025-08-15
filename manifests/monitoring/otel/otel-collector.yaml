@@ -72,7 +72,7 @@ spec:
       volumes:
         - name: cfg
           configMap:
-            name: otel-collector-config
+            name: otel-collector-conf
 ---
 apiVersion: v1
 kind: Service
