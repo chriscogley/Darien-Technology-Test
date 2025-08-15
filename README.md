@@ -1,6 +1,8 @@
 # Darien Technology Technical Test
 ## Despliegue de OpenWebUI + Ollama con Modelo LLM Local
 
+
+
 ## Parte 1
 
 Se debe desplegar una instancia de OpenWebUI conectada a Ollama para ejecutar un modelo LLM local (e.g., Llama3, Qwen, Mistral) con alta disponibilidad, seguridad, manejo  de secretos y monitoreo. La aplicación debe ser accesible mediante el dominio que se definirá posteriormente (ya configurado por el equipo) y utilizar una base de datos.
@@ -215,7 +217,7 @@ La estructura principal del repositorio es la siguiente:
 ├── scripts
 
 ```
-### Folder apps
+#### Folder apps
 
 Las aplicaciones de ArgoCD. Objetos que usa ArgoCD para instalar cada uno de los componentes necesarios del sistema.
 
@@ -235,15 +237,15 @@ Las aplicaciones de ArgoCD. Objetos que usa ArgoCD para instalar cada uno de los
 14. promtail.yaml: Configuraciones del stack de observabilidad. Instala Promtail para enviar los logs de los pods a Loki.
 15. sealed-secrets.yaml: Instala el SealedSecrets controller, usado para encriptar los secretos usados en el sistema.
 
-### Folder bootstrap
+#### Folder bootstrap
 
 Punto principal que usa ArgoCD para desplegar todas las apps. Se corre una vez y ArgoCD toma el control de manejar los cambios.
 
-### Folder charts
+#### Folder charts
 
 Chart Helm para instalar OpenWebUI. Usada una local para integrar secretos y envs para concetar al stack de observabilidad.
 
-### Folder manifests
+#### Folder manifests
 
 YAMLs simples de Kubernetes (no Helms) para instalar:
 1. El ingress de ArgoCD UI creado para acceder desde mi explorador web. Use un dominio propio para poder acceder al ArgoCD UI y ver mas facil lo que sucede en el ArgoCD.
@@ -251,11 +253,11 @@ YAMLs simples de Kubernetes (no Helms) para instalar:
 3. Las reglas de prometheus, dashboard de grafana y colectores del stack de observabilidad. Separado para claridad.
 4. Secretos encriptados para aplicar en el Cluster. Forma sencilla y rapida de aplicar los secretos de una manera segura.
 
-### Folder scripts
+#### Folder scripts
 
 Script usado para encriptar (usando kubeseal) los secretos y ponerlos en manifests/secrets/
 
-## Workflow:
+#### Workflow de despliegue:
 
 1. Se hace commit de los manifests/Helm charts de Kubernetes al repositorio Git.
 2. ArgoCD detecta cambios en el respositorio.
