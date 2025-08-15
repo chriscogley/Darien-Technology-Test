@@ -1,26 +1,41 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: otel-collector-config
+  name: otel-collector-conf
   namespace: monitoring
 data:
-  config.yaml: |
+  otel-collector.yaml: |
     receivers:
       otlp:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:4317
           http:
-            endpoint: 0.0.0.0:4318
-    processors:
-      batch: {}
+    connectors:
+      spanmetrics:
+        histogram:
+          explicit:
+            buckets: [50ms, 100ms, 200ms, 400ms, 800ms, 1s, 2s, 5s, 10s]
+        dimensions:
+          - name: http.method
+          - name: http.route
+          - name: http.target
+          - name: peer.service
+          - name: status.code
     exporters:
       prometheus:
-        endpoint: 0.0.0.0:8889
-        resource_to_telemetry_conversion:
-          enabled: true
+        endpoint: "0.0.0.0:8889"
+    processors:
+      batch: {}
     service:
       pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [spanmetrics]
+        metrics/spanmetrics:
+          receivers: [spanmetrics]
+          processors: [batch]
+          exporters: [prometheus]
         metrics:
           receivers: [otlp]
           processors: [batch]
@@ -67,17 +82,12 @@ metadata:
   labels:
     app: otel-collector
 spec:
-  selector: { app: otel-collector }
+  selector:
+    app: otel-collector
   ports:
-    - name: otlp-grpc
-      port: 4317
-      targetPort: otlp-grpc
-    - name: otlp-http
-      port: 4318
-      targetPort: otlp-http
-    - name: prom-exp
+    - name: metrics
       port: 8889
-      targetPort: prom-exp
+      targetPort: 8889
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -94,6 +104,6 @@ spec:
   namespaceSelector:
     matchNames: ["monitoring"]
   endpoints:
-    - port: prom-exp
+    - port: metrics
       path: /metrics
       interval: 15s
