@@ -1,6 +1,12 @@
 # Darien Technology Technical Test
 ## Despliegue de OpenWebUI + Ollama con Modelo LLM Local
 
+
+| :warning: ENTREGABLES |
+|:----------------------|
+> [!IMPORTANT]
+> El diagrama de arquitectura esta en el folder Part 2/ y tiene el nombre DarienT-test.pdf
+
 ## Parte 2
 
 Imagina que la solución OpenWebUI + Ollama ha sido un éxito y la empresa ha decidido convertirla en una plataforma SaaS (Software as a Service) para múltiples clientes empresariales. La demanda ha crecido exponencialmente y el entorno de un solo servidor ya no es suficiente. Tu tarea es diseñar la arquitectura para esta nueva fase del producto. No debes implementar esta solución, solo diseñarla. El objetivo es evaluar tu capacidad para planificar una infraestructura robusta, escalable, segura y costo-eficiente en un entorno de nube real.
@@ -82,10 +88,10 @@ Basado en data historica se puede configurar patrones de escalado y/o un solo no
 
 AWS ofrece el servicio Amazon Relational Database (RDS). Aurora es un tipo de RDS que ofrece alta disponibilidad, escalabilidad y rendimiento, operacion simplificada y seguridad.
 
-- Alta disponibilidad: Aurora replica automáticamente los datos en tres AZ distintas dentro de la región (seis copias en su almacenamiento distribuido). Esto significa que la falla de una AZ o incluso de un nodo de base de datos no provoca pérdida de servicio, pues hay instancias en standby listas para failover. RDS Multi-AZ, por su parte, mantiene una réplica sincronizada en otra AZ para failover automático.
-- Escalabilidad y rendimiento: Aurora ofrece autoescalado de capacidad (Aurora Serverless v2) y puede añadir réplicas de solo lectura fácilmente para repartir carga de consultas. Garantiza throughput alto y latencias bajas incluso con picos de usuarios. Está optimizado para manejar miles de conexiones concurrentes, ideal para SaaS multi-cliente.
-- Operación simplificada: Al ser un servicio gestionado, AWS se encarga de parches, actualizaciones de versión, backups automáticos y encryption at rest, liberando al equipo de DevOps de esa carga. También integra monitoreo (CloudWatch) para performance insights. En comparación, una base de datos auto-alojada en Kubernetes sería más propensa a fallos (pod expulsado, pérdida de datos si PVC no replicado) y requeriría implementar manualmente HA y backups.
-- Seguridad: Aurora/RDS permite aislarse en subredes privadas (sin acceso público), controlar acceso vía Security Groups e integrar con AWS IAM para autenticación. Además, todos los datos en reposo y en tránsito pueden cifrarse fácilmente. En multi-inquilino, podemos usar un solo esquema multi-tenant o múltiples esquemas/DB por cliente, según convenga, sabiendo que la base de datos es confiable y consistente.
+- Alta disponibilidad: Aurora replica automaticamente los datos en tres AZ distintas dentro de la region (seis copias en su almacenamiento distribuido). Esto significa que la falla de una AZ o incluso de un nodo de base de datos no provoca pérdida de servicio, pues hay instancias en standby listas para failover. RDS Multi-AZ, por su parte, mantiene una réplica sincronizada en otra AZ para failover automatico.
+- Escalabilidad y rendimiento: Aurora ofrece autoescalado de capacidad (Aurora Serverless v2) y puede añadir réplicas de solo lectura facilmente para repartir carga de consultas. Garantiza throughput alto y latencias bajas incluso con picos de usuarios. Está optimizado para manejar miles de conexiones concurrentes, ideal para SaaS multi-cliente.
+- Operacion simplificada: Al ser un servicio gestionado, AWS se encarga de parches, actualizaciones de version, backups automaticos y encryption at rest, liberando al equipo de DevOps de esa carga. Tambien integra monitoreo (CloudWatch) para performance insights. En comparacion, una base de datos auto-alojada en Kubernetes seria más propensa a fallos (pod expulsado, perdida de datos si PVC no replicado) y requeriria implementar manualmente HA y backups.
+- Seguridad: Aurora/RDS permite aislarse en subredes privadas (sin acceso publico), controlar acceso via Security Groups e integrar con AWS IAM para autenticacion. Ademas, todos los datos en reposo y en transito pueden cifrarse facilmente. En multi-inquilino, podemos usar un solo esquema multi-tenant o multiples esquemas/DB por cliente, segun convenga, sabiendo que la base de datos es confiable y consistente.
 
 RDS alojaria los chats, configuraciones, metadata y mas. Para incrementar la velocidad de la aplicacion se puede agregar Redis (Elasticache) para cachear respuestas mas frecuentes.
 

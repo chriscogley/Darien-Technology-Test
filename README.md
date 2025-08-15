@@ -4,7 +4,7 @@
 | :warning: ENTREGABLES |
 |:----------------------|
 > [!IMPORTANT]
-> Los entregables de la Parte 1 estan en la raiz del repositorio. Los entregables de la Parte 2 estan en el folder Part 2/
+> Los entregables de la Parte 1 estan en la raiz del repositorio. Los entregables de la Parte 2 estan en el folder Part 2.
 
 ## Parte 1
 
