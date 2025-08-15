@@ -19,7 +19,7 @@ spec:
           WEBUI_URL: https://devops-cc.darienc.com
           DEFAULT_USER_ROLE: admin
           OLLAMA_BASE_URL: http://ollama.ai.svc.cluster.local:11434
-          ENABLE_SIGNUP: "True"
+          ENABLE_SIGNUP: "false"
           ENABLE_LOGIN_FORM: "True"
           ENV: prod
           ENABLE_OTEL: "true"
