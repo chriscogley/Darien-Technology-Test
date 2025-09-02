@@ -1,0 +1,50 @@
+module "fng-dev-vpc" {
+  source              = "./terraform-aws-modules-main/vpc/vpc"
+  vpc_name            = "fng-dev"
+  vpc_block           = "10.192.0.0/22"
+  vpc_flow_log_name   = "fng-dev-flow"
+  subnet_netmask      = 26
+  subnet_qty          = 6
+  public_subnets_qty  = 3
+  private_subnets_qty = 3
+}
+
+resource "aws_vpc_endpoint" "fng-dev-endpoint-ssm" {
+  service_name      = "com.amazonaws.us-east-1.ssm"
+  vpc_id            = module.fng-dev-vpc.id
+  subnet_ids = [module.fng-dev-vpc.private_subnet[0], module.fng-dev-vpc.public_subnet[1]]
+  vpc_endpoint_type = "Interface"
+  tags = {
+    Name = "fng-dev-endpoint-ssm"
+  }
+}
+
+resource "aws_vpc_endpoint" "fng-dev-endpoint-ssmmessages" {
+  service_name      = "com.amazonaws.us-east-1.ssmmessages"
+  vpc_id            = module.fng-dev-vpc.id
+  subnet_ids = [module.fng-dev-vpc.private_subnet[0], module.fng-dev-vpc.public_subnet[1]]
+  vpc_endpoint_type = "Interface"
+  tags = {
+    Name = "fng-dev-endpoint-ssmmessages"
+  }
+}
+
+resource "aws_vpc_endpoint" "fng-dev-endpoint-ec2messages" {
+  service_name      = "com.amazonaws.us-east-1.ec2messages"
+  vpc_id            = module.fng-dev-vpc.id
+  subnet_ids = [module.fng-dev-vpc.private_subnet[0], module.fng-dev-vpc.public_subnet[1]]
+  vpc_endpoint_type = "Interface"
+  tags = {
+    Name = "fng-dev-endpoint-ec2messages"
+  }
+}
+
+resource "aws_vpc_endpoint" "fng-dev-endpoint-s3" {
+  service_name      = "com.amazonaws.us-east-1.s3"
+  vpc_id            = module.fng-dev-vpc.id
+  subnet_ids = [module.fng-dev-vpc.private_subnet[0], module.fng-dev-vpc.public_subnet[1]]
+  vpc_endpoint_type = "Interface"
+  tags = {
+    Name = "fng-dev-endpoint-s3"
+  }
+}

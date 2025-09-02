@@ -1,0 +1,17 @@
+aws/.terraform
+.terraform.tfvars
+.terraform.tfstate
+.terraform.tfstate.backup
+aws/.terraform.lock.hcl
+NONPRD/terraform
+NONPRD/terraform.tfvars
+NONPRD/terraform.tfstate
+NONPRD/terraform.tfstate.backup
+NONPRD/terraform.lock.hcl
+PRD/terraform
+PRD/terraform.tfvars
+PRD/terraform.tfstate
+PRD/terraform.tfstate.backup
+PRD/terraform.lock.hcl
+crash.log
+.idea

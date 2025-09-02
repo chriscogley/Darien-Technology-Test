@@ -1,0 +1,17 @@
+# terraform -chdir=/Users/chris/Documents/Repos/HotwireIaC/aws/envs/dev \
+#   import -var-file=dev.tfvars \
+#   aws_route53_record.hw-fng-com_demo Z04582493GYYDVH4AGAVQ_demo.hw-fng.com_A
+
+#
+# terraform -chdir=/Users/chris/Documents/Repos/HotwireIaC/aws/envs/dev -var-file=dev.tfvars import aws_route53_zone.hw-fng_com Z04582493GYYDVH4AGAVQ
+# terraform -chdir=/Users/chris/Documents/Repos/HotwireIaC/aws/envs/dev -var-file=dev.tfvars import
+# terraform import aws_route53_zone.hw-fng_com Z04582493GYYDVH4AGAVQ
+# terraform import aws_route53_record.hw-fng-com_demo Z04582493GYYDVH4AGAVQ_demo.hw-fng.com_A
+
+#LOGIN
+  983  aws sso login --profile fng-dev
+  986  export AWS_PROFILE=fng-dev
+  987  aws sts get-caller-identity
+
+
+  terraform plan -var-file=dev.tfvars
